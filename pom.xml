@@ -34,7 +34,7 @@
 	</properties>
 
 	<modules>
-		<module>big-consumer-server</module>
-		<module>big-provider-server</module>
+		<module>big-auth-server</module>
+		<module>big-upms-server</module>
 	</modules>
 </project>

@@ -1,0 +1,19 @@
+server:
+  port: 8765
+
+spring:
+  application:
+    name: big-upms-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+security:
+  oauth2:
+    client:
+      client-id: appid
+      client-secret: secret
+      scope: all
+    resource:
+      token-info-uri: http://127.0.0.1:8764/oauth/check_token
