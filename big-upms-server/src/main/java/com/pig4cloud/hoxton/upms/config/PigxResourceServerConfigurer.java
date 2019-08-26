@@ -15,28 +15,32 @@
  * Author: lengleng (wangiegie@gmail.com)
  */
 
-package com.pig4cloud.hoxton.upms;
+package com.pig4cloud.hoxton.upms.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.web.client.RestTemplate;
 
-@EnableDiscoveryClient
-@SpringBootApplication
-public class BigUpmsServerApplication {
+/**
+ * @author lengleng
+ * @date 2019-08-24
+ */
+@Configuration
+@EnableResourceServer
+public class PigxResourceServerConfigurer extends ResourceServerConfigurerAdapter {
+	@Autowired
+	private RestTemplate restTemplate;
+	@Autowired
+	protected RemoteTokenServices remoteTokenServices;
 
-	public static void main(String[] args) {
-		SpringApplication.run(BigUpmsServerApplication.class, args);
+	@Override
+	public void configure(ResourceServerSecurityConfigurer resources) {
+		remoteTokenServices.setRestTemplate(restTemplate);
+		resources.tokenServices(remoteTokenServices);
 	}
-
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
-
 }
+

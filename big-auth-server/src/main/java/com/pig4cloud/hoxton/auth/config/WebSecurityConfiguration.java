@@ -17,15 +17,19 @@
 
 package com.pig4cloud.hoxton.auth.config;
 
+import com.pig4cloud.hoxton.auth.mobile.MobileLoginSuccessHandler;
+import com.pig4cloud.hoxton.auth.mobile.MobileSecurityConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
  * @author lengleng
@@ -37,6 +41,17 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+				.authorizeRequests()
+				.antMatchers(
+						"/mobile/**").permitAll()
+				.anyRequest().authenticated()
+				.and().csrf().disable()
+				.apply(mobileSecurityConfigurer());
+	}
 
 	/**
 	 * 必须注入 AuthenticationManager，不然oauth  无法处理四种授权方式
@@ -61,5 +76,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
 		userDetailsManager.createUser(User.withUsername("lengleng").password("{noop}lengleng").authorities("USER").build());
 		return userDetailsManager;
+	}
+
+	@Bean
+	public MobileSecurityConfigurer mobileSecurityConfigurer() {
+		return new MobileSecurityConfigurer();
+	}
+
+	@Bean
+	public AuthenticationSuccessHandler mobileLoginSuccessHandler() {
+		return new MobileLoginSuccessHandler();
 	}
 }
